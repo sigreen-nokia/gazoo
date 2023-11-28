@@ -4,10 +4,10 @@
 FROM golang:1.21 AS builder
 
 # Repository location
-ARG REPOSITORY=github.com/ncarlier
+ARG REPOSITORY=github.com/sigreen-nokia
 
 # Artifact name
-ARG ARTIFACT=webhookd
+ARG ARTIFACT=gazoo
 
 # Copy sources into the container
 ADD . /go/src/$REPOSITORY/$ARTIFACT
@@ -24,13 +24,13 @@ RUN make
 FROM alpine:latest AS slim
 
 # Repository location
-ARG REPOSITORY=github.com/ncarlier
+ARG REPOSITORY=github.com/sigreen-nokia
 
 # Artifact name
-ARG ARTIFACT=webhookd
+ARG ARTIFACT=gazoo
 
 # User
-ARG USER=webhookd
+ARG USER=gazoo
 ARG UID=1000
 
 # Create non-root user
@@ -54,7 +54,7 @@ EXPOSE 8080
 
 USER $USER
 
-CMD [ "webhookd" ]
+CMD [ "gazoo" ]
 
 #########################################
 # Distribution stage with some tooling
@@ -62,13 +62,13 @@ CMD [ "webhookd" ]
 FROM alpinelinux/docker-cli:latest AS distrib
 
 # Repository location
-ARG REPOSITORY=github.com/ncarlier
+ARG REPOSITORY=github.com/sigreen-nokia
 
 # Artifact name
-ARG ARTIFACT=webhookd
+ARG ARTIFACT=gazoo
 
 # User
-ARG USER=webhookd
+ARG USER=gazoo
 ARG UID=1000
 
 # Create non-root user
@@ -96,4 +96,13 @@ EXPOSE 8080
 
 USER $USER
 
-CMD [ "webhookd" ]
+#http
+#CMD [ "gazoo" ]
+#https using tls
+#this tls options requires certificates
+#CMD [ "gazoo", "--tls" ]
+#https tls using acme protocol (you must specify your domain)
+#CMD [ "gazoo", "--tls", "--tls-domain=hook.example.com" ]
+#debugging gazoo
+CMD [ "gazoo", "--log-level", "debug", "--log-http-request", "--log-hook-output"  ]
+

@@ -1,10 +1,10 @@
 version: "3.6"
 
 services:
-  webhookd:
-    hostname: webhookd
-    image: ncarlier/webhookd:latest
-    container_name: webhookd
+  gazoo:
+    hostname: gazoo
+    image: sigreen-nokia/gazoo:latest
+    container_name: gazoo
     restart: always
     ports:
     - "8080:8080"

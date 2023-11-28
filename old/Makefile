@@ -3,7 +3,7 @@
 export GO111MODULE=on
 
 # App name
-APPNAME=webhookd
+APPNAME=gazoo
 
 # Go configuration
 GOOS?=$(shell go env GOHOSTOS)
