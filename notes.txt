@@ -76,7 +76,17 @@ curl --data '{"Status":"ACTIVE"}' -H 'Content-Type: application/json' http://loc
 curl --data '{"Status":"FINISHED"}' -H 'Content-Type: application/json' http://localhost:8080/
 #
 #the default response data block is 
-{"name":"webhookd","version":"snapshot"}
+#{"name":"webhookd","version":"snapshot"}
+#it comes from pkg/api/index.go
+        // Get hook location
+        hookName := strings.TrimPrefix(r.URL.Path, "/")
+        if hookName == "" {
+                infoHandler(w, r)
+                return
+        }
+
+
+
 
 #################################
 #tracing in wireshark
