@@ -1,0 +1,14 @@
+version: "3.6"
+
+services:
+  gazoo:
+    hostname: gazoo
+    image: sigreen-nokia/gazoo:latest
+    container_name: gazoo
+    restart: always
+    ports:
+    - "8080:8080"
+    environment:
+    - WHD_SCRIPTS=/scripts
+    volumes:
+    - ./scripts:/scripts

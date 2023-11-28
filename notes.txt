@@ -1,0 +1,109 @@
+
+#simplest
+#run the pre-built docker image from my public repo
+docker run -d --name=webhookd -v ${PWD}/scripts:/scripts -p 8080:8080 ncarlier/webhookd
+docker run -d --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 sigreen-nokia/gazoo
+
+#harder but more independent 
+#build the docker image locally and run it 
+docker build -t gazoo:1.0 .
+#run your local built image
+docker run -d --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0 
+
+#to make sure docker starts up the daemon if the server reboots of power fails
+
+#to stop and cleanup the gazoo docker daemon 
+docker stop gazoo
+docker rm gazoo
+
+#cleanup absoluting everything in your docker, good for testing but be carefull in prod
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker rmi $(docker images -q)
+
+#######################
+#how to debug the build if it fails
+#######################
+#change the build commabd to get the id's
+DOCKER_BUILDKIT=0 docker build -t gazoo:1.0 .
+#if you need to run the actual image that failed
+#find the container that failed:
+docker ps -a
+#Commit the container id to an image:
+docker commit 6934ada98de6
+docker image list
+#run the image
+docker run -it d035d8a5a34a bash -il
+#try the failed commands
+
+#######################
+#connect to a running docker with bash
+#######################
+docker container exec -it gazoo /bin/bash
+gazoo --help
+
+#######################
+#running gazoo in debug
+#######################
+#uncomment this line of Dockerfile
+#CMD [ "gazoo", "--log-level", "debug", "--log-http-request", "--log-hook-output"  ]
+#rebuild and redeploy gazoo
+docker logs -f gazoo
+#this is an ok 200
+#time=2023-11-28T19:32:12.754Z level=INFO+1 source=/go/src/github.com/sigreen-nokia/gazoo/pkg/logger/logger.go:46 msg="POST / HTTP/1.1" ip=172.17.0.1 time="28/Nov/2023:19:32:12 +0000" duration=0 status=200 bytes=40 referer="" ua=python-requests/2.27.1 reqid=1701199932754531091
+
+
+
+
+###############################
+#testing gazoo
+###############################
+in scripts/ I've included this test.sh file. 
+
+With the docker running (docker ps), call the script with
+
+curl --data '{"message":"I am alive"}' -H 'Content-Type: application/json' http://localhost:8080/test
+Hook information: hook_name=test, hook_id=3, hook_method=POST
+Hook information: x_forwarded_for=172.17.0.1, x_webauth_user=
+Query parameter: id=
+Header parameter: user-agent=curl/8.1.2
+Script parameters: {"message":"I am alive"}
+
+##################################
+simulating a defender webhook
+#################################
+curl --data '{"Status":"ACTIVE"}' -H 'Content-Type: application/json' http://localhost:8080/
+curl --data '{"Status":"FINISHED"}' -H 'Content-Type: application/json' http://localhost:8080/
+#
+#the default response data block is 
+{"name":"webhookd","version":"snapshot"}
+
+#################################
+#tracing in wireshark
+#################################
+in wireshark add the filter tcp.port == 8080
+Look for the HTTP/JSON protocol messages
+#the start event conatins
+Deepfield-Event ACTIVE 
+Status ACTIVE 
+#the stop event contains
+Deepfield-Event FINISHED
+Status FINISHED
+ 
+###############################
+#setting up your defender events to be sent to gazoo
+###############################
+#assumption is that you have port 8080 opened up all the way to the docker
+#
+#in the defender ui
+#Defender->notification->
+#	name gazoo
+#	tick webhook
+#	url: http://[your docker hosts ip of fqdn]:8080 
+#	click test, you should see a green test sent successfully if your firewall and docker allow the 8080 port traffic
+#	start and end event should be ticked, this is the default
+#	save
+#
+#add the notification to the policy
+
+
