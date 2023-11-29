@@ -57,9 +57,18 @@ func triggerWebhook(w http.ResponseWriter, r *http.Request) {
 
 	// Get hook location
 	hookName := strings.TrimPrefix(r.URL.Path, "/")
+
+	// original code
+	// if hookName == "" {
+	//	infoHandler(w, r)
+	//	return
+
+	// With defender we will never find a script to run as the url ends in / 
+	// So we'll set a default script to run instead of sending a default response
+	// }
 	if hookName == "" {
-		infoHandler(w, r)
-		return
+		hookName = "default.sh"
+		slog.Debug("setting hookName to default.sh as it was blank...")
 	}
 	_, err := hook.ResolveScript(scriptDir, hookName)
 	if err != nil {

@@ -1,32 +1,119 @@
+######################################
+#getting the code
+######################################
+#if you are not familiar with github, just download the zip from here, https://github.com/sigreen-nokia/gazoo  unzip it locally. Open a terminal
+#if you are familiar with github cli then you can use "gh repo clone sigreen-nokia/gazoo" or "git clone sigreen-nokia/gazoo"
 
-#simplest
-#run the pre-built docker image from my public repo
-docker run -d --name=webhookd -v ${PWD}/scripts:/scripts -p 8080:8080 ncarlier/webhookd
-docker run -d --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 sigreen-nokia/gazoo
+######################################
+#platforms
+######################################
+I've tested this on my mac running docker for desktop 
+I've also tested this on ubuntu-linx(20.04) running docker
+It will probably also work on a windows 10 machine with wsl installed (ubuntu image), using the wsl linux terminal to run it.
 
-#harder but more independent 
-#build the docker image locally and run it 
+######################################
+#pre requisits
+######################################
+you just need to install docker or on mac docker desktop
+
+######################################
+#simplest way to get started: just run my docker image
+######################################
+docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 simonjohngreen/gazoo
+
+######################################
+#dev method, allows you the opertunity to customise the scripts. From the git source this builds your own private docker image and then runs it. it doesn't use my image from dockerhub.
+######################################
+#build the docker image locally using the git repo code 
 docker build -t gazoo:1.0 .
-#run your local built image
-docker run -d --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0 
+#run your local built docker image
+docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-commands -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0 
 
-#to make sure docker starts up the daemon if the server reboots of power fails
+######################################
+#playing sound/speech when Defender events arrive 
+######################################
+#gazoo speaks start stop and test events. 
+#for start and stop events gazoo will speak the event and the event id
+#for test events gazoo will just say test event
+#see scripts/default.sh for how its done
 
+#Configuring a  MAC OSX host to speak when events arrrive into gazoo 
+#In a MAC terminal window, copy paste the following 
+cat << EOF > /usr/local/bin/gazoo-speak.sh
+#!/bin/bash
+tail -f -n0 /tmp/gazoo-commands/streamer | xargs -n1 say
+EOF
+chmod a+x /usr/local/bin/gazoo-speak.sh 
+touch /tmp/gazoo-commands/streamer
+/usr/local/bin/gazoo-speak.sh &
+#this line is suppose to restart the service on powerup, seems to be broken on my mac.
+sudo bash
+(crontab -l ; echo "@reboot /usr/local/bin/gazoo-speak.sh") | crontab -
+exit
+
+#Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo 
+#In a MAC terminal window, copy paste the following 
+cat << EOF > /usr/local/bin/gazoo-speak.sh
+#!/bin/bash
+tail -f -n0 /tmp/gazoo-commands/streamer | xargs -n1 say
+EOF
+chmod a+x /usr/local/bin/gazoo-speak.sh 
+touch /tmp/gazoo-commands/streamer
+/usr/local/bin/gazoo-speak.sh &
+#this line is suppose to restart the service on powerup, seems to be broken on my mac.
+sudo bash
+(crontab -l ; echo "@reboot /usr/local/bin/gazoo-speak.sh") | crontab -
+exit
+
+
+###############################
+#Configuring your defender notification in the Deepfield ui
+###############################
+#assumption is that you have port 8080 opened up all the way to the docker
+#
+#in the defender ui
+#Defender->notification->
+#       name gazoo
+#       tick webhook
+#       url: http://[your docker hosts ip of fqdn]:8080
+#       click test, you should see a green test sent successfully if your firewall and docker allow the 8080 port traffic
+#       start and end event should be ticked, this is the default
+#       save
+#
+#Then add the notification to the policy
+
+
+
+
+#######################
+#how to push your private local docker image up to github
+#######################
+docker login --username=simonjohngreen 
+docker image list | grep gazoo
+docker tag ba6409e01784 simonjohngreen/gazoo:latest
+docker push simonjohngreen/gazoo:latest
+
+docker image tag rhel-httpd:latest registry-host:5000/myadmin/rhel-httpd:latest
+docker image push registry-host:5000/myadmin/rhel-httpd:latest
+
+
+#######################
 #to stop and cleanup the gazoo docker daemon 
+#######################
 docker stop gazoo
 docker rm gazoo
+docker image rm [the id of the gazoo image]
 
 #cleanup absoluting everything in your docker, good for testing but be carefull in prod
 docker stop $(docker ps -aq)
 docker rm $(docker ps -aq)
-docker rmi $(docker images -q)
+docker rmi --force $(docker images -q)
 
 #######################
-#how to debug the build if it fails
+#how to debug the docker build if it fails
 #######################
-#change the build commabd to get the id's
+#here I change the build command to get the id's
 DOCKER_BUILDKIT=0 docker build -t gazoo:1.0 .
-#if you need to run the actual image that failed
 #find the container that failed:
 docker ps -a
 #Commit the container id to an image:
@@ -34,86 +121,95 @@ docker commit 6934ada98de6
 docker image list
 #run the image
 docker run -it d035d8a5a34a bash -il
-#try the failed commands
+#try the failed commands inside that docker
 
 #######################
-#connect to a running docker with bash
+#connect to a running gazoo docker with bash
 #######################
 docker container exec -it gazoo /bin/bash
 gazoo --help
 
 #######################
-#running gazoo in debug
+#how does gazoo handle defender events
+#######################
+#
+#for defender events
+#gazoo will when its sent a Defender event with http://x.x.x.x:8080/
+#run the script in scripts/default.sh, 
+#this is quite different to collectord see file pkg/api/index.go fir the code changes if you are interrested 
+#
+#additionaly
+#gazoo will if its sent a webhook with for example http://x.x.x.x/test
+#run the script in dir scripts/test.sh 
+#gazoo will if its sent a webhook for example http://x.x.x.x/test/me
+#run the scrit in dir scripts/test/me.sh 
+
+#######################
+#running gazoo in debug 
 #######################
 #uncomment this line of Dockerfile
 #CMD [ "gazoo", "--log-level", "debug", "--log-http-request", "--log-hook-output"  ]
 #rebuild and redeploy gazoo
 docker logs -f gazoo
-#this is an ok 200
-#time=2023-11-28T19:32:12.754Z level=INFO+1 source=/go/src/github.com/sigreen-nokia/gazoo/pkg/logger/logger.go:46 msg="POST / HTTP/1.1" ip=172.17.0.1 time="28/Nov/2023:19:32:12 +0000" duration=0 status=200 bytes=40 referer="" ua=python-requests/2.27.1 reqid=1701199932754531091
-
-
-
-
-###############################
-#testing gazoo
-###############################
-in scripts/ I've included this test.sh file. 
-
-With the docker running (docker ps), call the script with
-
-curl --data '{"message":"I am alive"}' -H 'Content-Type: application/json' http://localhost:8080/test
-Hook information: hook_name=test, hook_id=3, hook_method=POST
-Hook information: x_forwarded_for=172.17.0.1, x_webauth_user=
-Query parameter: id=
-Header parameter: user-agent=curl/8.1.2
-Script parameters: {"message":"I am alive"}
+#I found wireshark more usefull
 
 ##################################
-simulating a defender webhook
+simulating a defender webhook locally without defender
 #################################
-curl --data '{"Status":"ACTIVE"}' -H 'Content-Type: application/json' http://localhost:8080/
-curl --data '{"Status":"FINISHED"}' -H 'Content-Type: application/json' http://localhost:8080/
-#
-#the default response data block is 
-#{"name":"webhookd","version":"snapshot"}
-#it comes from pkg/api/index.go
-        // Get hook location
-        hookName := strings.TrimPrefix(r.URL.Path, "/")
-        if hookName == "" {
-                infoHandler(w, r)
-                return
-        }
+#start event
+curl --data '{"Event ID":"7", "Status":"ACTIVE"}' -H 'Content-Type: application/json' http://localhost:8080/
+#stop event
+curl --data '{"Event ID":"7", "Status":"FINISHED"}' -H 'Content-Type: application/json' http://localhost:8080/
+#test event
+curl --data '{"Status":"TEST"}' -H 'Content-Type: application/json' http://localhost:8080/
+#in valid event event
+curl --data '{"Status":"TESTY"}' -H 'Content-Type: application/json' http://localhost:8080/
 
-
-
+##################################
+#example dump of a Defender event data block
+##################################
+{"Event ID": 10, "Event Console": "https://exp-e-upgrade-testing-vlabs.deepfield.net/defender/events/10", "Status": "ACTIVE", "Start": "2023-11-28 22:20:37.000000 UTC", "End": "-", "Policy ID": 1, "Policy Name": "vlabs_default", "Dimension ID": 192, "Dimension Name": "Customer", "Dimension Configuration": "https://exp-e-upgrade-testing-vlabs.deepfield.net/config/dimensions/192", "Protected Object ID": 7, "Protected Object Name": "96.0.0.0/4", "Protected Object Defender Console": "https://exp-e-upgrade-testing-vlabs.deepfield.net/defender/policies/1/7", "Protected Object Configuration": "https://exp-e-upgrade-testing-vlabs.deepfield.net/config/dimensions/192/7", "Threshold": "DDoS directed at host exceeds 60.00 kpps", "Threshold Exceeded": "2023-11-28 22:20:37.000000 UTC", "Threshold Inactive": "-", "Peak DDoS PPS": 65063, "Peak DDoS BPS": 54975920, "DDoS Types": "tcpreflection, wsd, botnet, arms, dns, tcpflood", "Top Destinations by DDoS+Dropped BPS": {"columns": ["Addr", "Peak DDoS+Dropped BPS"], "rows": [["100.100.100.214", 54965253.0], ["100.100.100.51", 6400.0], ["100.100.100.58", 2133.0], ["100.100.100.40", 1066.0], ["100.100.100.42", 1066.0]]}, "Top Destinations by DDoS+Dropped PPS": {"columns": ["Addr", "Peak DDoS+Dropped PPS"], "rows": [["100.100.100.214", 65030.0], ["100.100.100.51", 20.0], ["100.100.100.58", 6.0], ["100.100.100.40", 3.0], ["100.100.100.42", 3.0]]}}
 
 #################################
 #tracing in wireshark
 #################################
 in wireshark add the filter tcp.port == 8080
 Look for the HTTP/JSON protocol messages
-#the start event conatins
-Deepfield-Event ACTIVE 
-Status ACTIVE 
-#the stop event contains
-Deepfield-Event FINISHED
-Status FINISHED
  
-###############################
-#setting up your defender events to be sent to gazoo
-###############################
-#assumption is that you have port 8080 opened up all the way to the docker
+######################################
+#other old notes
+######################################
+#windows method1
+PowerShell -Command "Add-Type –AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('hello');"
+#windows method3
+mshta vbscript:Execute("CreateObject(""SAPI.SpVoice"").Speak(""Hello"")(window.close)")
+#mac
+say "dee dos event"
+#ubuntu linux
+spd-say "hello"
 #
-#in the defender ui
-#Defender->notification->
-#	name gazoo
-#	tick webhook
-#	url: http://[your docker hosts ip of fqdn]:8080 
-#	click test, you should see a green test sent successfully if your firewall and docker allow the 8080 port traffic
-#	start and end event should be ticked, this is the default
-#	save
+#to get the sounds out of the docker, simplest would be to use a file in a shared volumes with the commands 
+#docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0
+#then echo to it what you want to say echo xyx >> /tmp/xxxx/yyy
+#then have a command on the host running those commands
 #
-#add the notification to the policy
+#failing that PulseAudio which is on mac linux 
+#looks like pulseaudio also has a windows https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/
+#mac
+#brew install pulseaudio
+#ubuntu
+#apt-get install pulseaudio
+#
+#on the host
+while true; do eval "$(cat /path/to/pipe/mypipe)"; done in a file called execpipe.sh with #!/bin/bash header
+chmod +x it
+crontab -e
+@reboot /path/to/execpipe.sh
+
+
+
+
+
+
 
 

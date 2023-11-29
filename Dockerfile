@@ -97,12 +97,12 @@ EXPOSE 8080
 USER $USER
 
 #http
-#CMD [ "gazoo" ]
+CMD [ "gazoo" ]
 #https using tls
 #this tls options requires certificates
 #CMD [ "gazoo", "--tls" ]
 #https tls using acme protocol (you must specify your domain)
 #CMD [ "gazoo", "--tls", "--tls-domain=hook.example.com" ]
 #debugging gazoo
-CMD [ "gazoo", "--log-level", "debug", "--log-http-request", "--log-hook-output"  ]
+#CMD [ "gazoo", "--log-level", "debug", "--log-http-request", "--log-hook-output"  ]
 
