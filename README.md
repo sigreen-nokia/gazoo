@@ -96,7 +96,7 @@ exit
 * Defender->notification->
 *        name gazoo
 *        tick webhook
-*        url: http://[your docker hosts ip of fqdn]:8080
+*        url: http://[your docker hosts ip or fqdn]:8080
 *       click test, you should see a green test sent successfully if your firewall and docker allow the 8080 port traffic
 *       start and end event should be ticked, this is the default
 *       save
