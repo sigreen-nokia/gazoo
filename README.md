@@ -52,11 +52,11 @@
 docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 simonjohngreen/gazoo
 ```
 
-## developer
+## Developer method (build)
 
-** This method, allows you the opertunity to customise the scripts. 
-** From the git source this builds your own private docker image and then runs it. 
-** It doesn't use my image from dockerhub.
+* This method, allows you the opertunity to customise the scripts. 
+* From the git source this builds your own private docker image and then runs it. 
+* It doesn't use my image from dockerhub.
 
 ```
 docker build -t gazoo:1.0 .
