@@ -92,15 +92,15 @@ exit
 ## Configuring your defender notification in the Deepfield ui
 
 * The assumption is that you have port 8080 opened up all the way to the docker
-* in the defender ui
-* Defender->notification->
-*        name gazoo
-*        tick webhook
-*        url: http://[your docker hosts ip or fqdn]:8080
+*       In the defender ui
+*       Defender->notification->
+*       name gazoo
+*       tick webhook
+*       url: http://[your docker hosts ip or fqdn]:8080
 *       click test, you should see a green test sent successfully if your firewall and docker allow the 8080 port traffic
 *       start and end event should be ticked, this is the default
 *       save
-* Then add the notification to the policy
+*       Then add the notification to the policy
 
 
 ## see notes.txt for debug hints and more detailed instructions
