@@ -63,12 +63,12 @@ docker build -t gazoo:1.0 .
 docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-commands -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0
 ```
 
-## playing sound/speech when Defender events arrive
+## playing sounds/speech when Defender events arrive
 
-* gazoo speaks start stop and test events.
-* for start and stop events gazoo will speak the event and the event id
-* for test events gazoo will just say test event
+* for Defender start and stop events gazoo will speak the event and the event id
+* for Defender test events (clicking test in the notification ui) gazoo will just say test event
 * see scripts/default.sh for how its done
+* I use native tools on the host to do the text to speech as containers don't have speakers 
 
 ## Configuring a  MAC OSX host to speak when events arrrive into gazoo
 
