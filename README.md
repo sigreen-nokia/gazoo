@@ -70,7 +70,8 @@ docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-co
 * for test events gazoo will just say test event
 * see scripts/default.sh for how its done
 
-* Configuring a  MAC OSX host to speak when events arrrive into gazoo
+## Configuring a  MAC OSX host to speak when events arrrive into gazoo
+
 * In a MAC terminal window, copy paste the following
 ```
 cat << EOF > /usr/local/bin/gazoo-speak.sh
@@ -86,7 +87,7 @@ sudo bash
 exit
 ```
 
-** (In progres) Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
+## (In progres) Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
 
 ## Configuring your defender notification in the Deepfield ui
 
