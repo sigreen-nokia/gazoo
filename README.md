@@ -87,7 +87,7 @@ sudo bash
 exit
 ```
 
-## (In progres) Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
+## (In progress) Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
 
 ## Configuring your defender notification in the Deepfield ui
 
