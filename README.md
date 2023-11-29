@@ -41,22 +41,27 @@
 * I've also tested this on ubuntu-linx(20.04) running docker
 * It will probably also work on a windows 10 machine with wsl installed (ubuntu image), using the wsl linux terminal to run it.
 
-##pre requisits
+## pre requisits
 
 * you just need to install docker or on mac docker desktop
 * then follow the steps below
 
 ## The simplest way to get started: just run my docker image
-...
+
+```
 docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 simonjohngreen/gazoo
-...
+```
 
-## dev method, allows you the opertunity to customise the scripts. From the git source this builds your own private docker image and then runs it. it doesn't use my image from dockerhub.
+## developer
 
-...
+** This method, allows you the opertunity to customise the scripts. 
+** From the git source this builds your own private docker image and then runs it. 
+** It doesn't use my image from dockerhub.
+
+```
 docker build -t gazoo:1.0 .
 docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-commands -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0
-...
+```
 
 ## playing sound/speech when Defender events arrive
 
@@ -67,7 +72,7 @@ docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-co
 
 * Configuring a  MAC OSX host to speak when events arrrive into gazoo
 * In a MAC terminal window, copy paste the following
-...
+```
 cat << EOF > /usr/local/bin/gazoo-speak.sh
 #!/bin/bash
 tail -f -n0 /tmp/gazoo-commands/streamer | xargs -n1 say
@@ -79,7 +84,7 @@ touch /tmp/gazoo-commands/streamer
 sudo bash
 (crontab -l ; echo "@reboot /usr/local/bin/gazoo-speak.sh") | crontab -
 exit
-...
+```
 
 ** (In progres) Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
 
