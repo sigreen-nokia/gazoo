@@ -93,7 +93,7 @@ exit
 
 * The assumption is that you have port 8080 opened up all the way to the docker
 *       In the defender ui
-*       Defender->notification->
+*       Defender->notification->[add]
 *       name gazoo
 *       tick webhook
 *       url: http://[your docker hosts ip or fqdn]:8080
