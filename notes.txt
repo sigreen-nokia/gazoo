@@ -2,13 +2,13 @@
 #getting the code
 ######################################
 #if you are not familiar with github, just download the zip from here, https://github.com/sigreen-nokia/gazoo  unzip it locally. Open a terminal
-#if you are familiar with github cli then you can use "gh repo clone sigreen-nokia/gazoo" or "git clone sigreen-nokia/gazoo"
+#if you are familiar with github cli then you can use git clone https://github.com/sigreen-nokia/gazoo.git 
 
 ######################################
 #platforms
 ######################################
-I've tested this on my mac running docker for desktop 
-I've also tested this on ubuntu-linx(20.04) running docker
+I've tested this on my mac running docker for desktop  (for ARM CPU's enable rosseta in advanced settings)
+I've also tested this on ubuntu-linx(20.04) installing docker with these steps https://www.ionos.co.uk/digitalguide/server/configuration/install-docker-on-ubuntu-2004/ 
 It will probably also work on a windows 10 machine with wsl installed (ubuntu image), using the wsl linux terminal to run it.
 
 ######################################
@@ -25,7 +25,7 @@ docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --nam
 #dev method, allows you the opertunity to customise the scripts. From the git source this builds your own private docker image and then runs it. it doesn't use my image from dockerhub.
 ######################################
 #build the docker image locally using the git repo code 
-docker build -t gazoo:1.0 .
+docker build --platform=linux/amd64 -t gazoo:1.0 .
 #run your local built docker image
 docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-commands -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0 
 
@@ -113,7 +113,7 @@ docker rmi --force $(docker images -q)
 #how to debug the docker build if it fails
 #######################
 #here I change the build command to get the id's
-DOCKER_BUILDKIT=0 docker build -t gazoo:1.0 .
+DOCKER_BUILDKIT=0 docker build --platform=linux/amd64 -t gazoo:1.0 .
 #find the container that failed:
 docker ps -a
 #Commit the container id to an image:
@@ -201,11 +201,41 @@ spd-say "hello"
 #apt-get install pulseaudio
 #
 #on the host
-while true; do eval "$(cat /path/to/pipe/mypipe)"; done in a file called execpipe.sh with #!/bin/bash header
-chmod +x it
-crontab -e
-@reboot /path/to/execpipe.sh
+#
 
+#how playing sounds on an ubuntu vm somewhere else, to my mac, over udp
+#on my mac
+# brew install ffmpeg
+# ffplay -nodisp -ac 2 -acodec pcm_s16le -ar 48000 -analyzeduration 0 -probesize 32 -f s16le -i udp://0.0.0.0:18181
+#on the ubuntu vm
+# add a sound device in esxi to the vm and reboot
+# sudo apt-get install open-vm-tools-desktop -y
+# reboot
+# sudo apt-get install ffmpeg
+# pactl load-module module-null-sink sink_name=remote
+#ffmpeg -f pulse -i "remote.monitor" -ac 2 -acodec pcm_s16le -ar 48000 -f s16le "udp://192.168.1.210:18181"
+#play a test sound on the ubuntu vm
+# sudo apt-get install  alsa-utils
+# /usr/bin/aplay /usr/share/sounds/alsa/Front_Center.wav 
+
+
+
+
+#how playing sounds on an ubuntu vm using vmware and rdp
+#on the ubuntu vm
+# add a sound device in esxi to the vm and reboot
+# sudo apt-get install open-vm-tools-desktop -y
+# reboot
+#sudo lspci | grep Audio
+#02:04.0 Audio device: VMware HD Audio Controller (rev 09)
+#sudo apt-get install alsa-base pulseaudio
+#sudo chown -R $USER:$USER $HOME/
+#pulseaudio --start
+#play a test sound on the ubuntu vm
+# sudo apt-get install  alsa-utils
+# /usr/bin/aplay /usr/share/sounds/sound-icons/prompt.wav 2>/dev/null & 
+
+ 
 
 
 

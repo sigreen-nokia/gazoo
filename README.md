@@ -33,12 +33,12 @@
 ## installing the code
 
 * if you are not familiar with github, just download the zip from here, https://github.com/sigreen-nokia/gazoo  unzip it locally. Open a terminal
-* if you are familiar with github cli then you can use "gh repo clone sigreen-nokia/gazoo" or "git clone sigreen-nokia/gazoo"
+* if you are familiar with github cli then you can use "git clone https://github.com/sigreen-nokia/gazoo.git"
 
 ## platforms
 
-* I've tested this on my mac running docker for desktop
-* I've also tested this on ubuntu-linx(20.04) running docker
+* I've tested this on my mac running docker for desktop (for ARM CPU's enable rosseta in advanced settings)
+* I've also tested this on ubuntu-linx(20.04) installing docker with these steps https://www.ionos.co.uk/digitalguide/server/configuration/install-docker-on-ubuntu-2004/ 
 * It will probably also work on a windows 10 machine with wsl installed (ubuntu image), using the wsl linux terminal to run it.
 
 ## pre requisits
@@ -59,7 +59,7 @@ docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --nam
 * It doesn't use my image from dockerhub.
 
 ```
-docker build -t gazoo:1.0 .
+docker build --platform=linux/amd64 -t gazoo:1.0 .
 docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-commands -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0
 ```
 
