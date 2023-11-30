@@ -30,6 +30,11 @@
 * gazoo is Opensource. 
 * gazoo uses webhookd as a base, webhookd is also opensource. 
 
+## How does it sound:
+
+* On a Mac I use the "say" command (you will see it used below), this sound really great and is based on siri
+* On Ubuntu I use "espeak" command (you will see it used below), this sounds like a 90s arcade game. If you find a better text to speeach you can use it instead below
+
 ## installing the code
 
 * if you are not familiar with github, just download the zip from here, https://github.com/sigreen-nokia/gazoo  unzip it locally. Open a terminal
@@ -38,33 +43,36 @@
 ## platforms
 
 * I've tested this on my mac running docker for desktop (for ARM CPU's enable rosseta in advanced settings)
-* I've also tested this on ubuntu-linx(20.04) installing docker with these steps https://www.ionos.co.uk/digitalguide/server/configuration/install-docker-on-ubuntu-2004/ 
-* It will probably also work on a windows 10 machine with wsl installed (ubuntu image), using the wsl linux terminal to run it.
+* I've also tested this on Ubuntu Linux 20.04. Install docker using your favorite site 
+* It will probably also work on a Windows 10 machine with wsl installed (Ubuntu image), using the wsl linux terminal to run it.
 
 ## pre requisits
 
-* you just need to install docker or on mac docker desktop
+* you just need to install Ubuntu's Docker, or on Mac Docker Desktop
 * then follow the steps below
 
 ## The simplest way to get started: just run my docker image
 
 ```
+cd gazoo (you much be in the gazoo git)
 docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 simonjohngreen/gazoo
 ```
 
-## Developer method (build)
+## Developer method (if you want to build the docker image yourself)
 
 * This method, allows you the opertunity to customise the scripts. 
 * From the git source this builds your own private docker image and then runs it. 
 * It doesn't use my image from dockerhub.
 
 ```
+cd gazoo (you much be in the gazoo git dir) 
 docker build --platform=linux/amd64 -t gazoo:1.0 .
 docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-commands -v ${PWD}/scripts:/scripts -p 8080:8080 gazoo:1.0
 ```
 
 ## playing sounds/speech when Defender events arrive
 
+* you will need a sound card
 * for Defender start and stop events gazoo will speak the event and the event id
 * for Defender test events (clicking test in the notification ui) gazoo will just say test event
 * see scripts/default.sh for how its done
@@ -87,7 +95,21 @@ sudo bash
 exit
 ```
 
-## (In progress) Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
+## Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
+
+* In the Ubuntu terminal, copy paste the following
+```
+sudo apt install -y espeak-ng-espeak
+sudo bash -c 'cat << EOF > /usr/local/sbin/gazoo-speak.sh
+#!/bin/bash
+tail -f -n0 /tmp/gazoo-commands/streamer | espeak 
+EOF'
+sudo chmod a+x /usr/local/sbin/gazoo-speak.sh
+sudo touch /tmp/gazoo-commands/streamer
+sudo chmod -R 777 /tmp/gazoo-commands/
+/usr/local/sbin/gazoo-speak.sh &
+(crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
+```
 
 ## Configuring your defender notification in the Deepfield ui
 

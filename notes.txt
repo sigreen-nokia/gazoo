@@ -19,11 +19,13 @@ you just need to install docker or on mac docker desktop
 ######################################
 #simplest way to get started: just run my docker image
 ######################################
+cd gazoo ( you must be in the git dir)
 docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 simonjohngreen/gazoo
 
 ######################################
 #dev method, allows you the opertunity to customise the scripts. From the git source this builds your own private docker image and then runs it. it doesn't use my image from dockerhub.
 ######################################
+cd gazoo ( you must be in the git dir)
 #build the docker image locally using the git repo code 
 docker build --platform=linux/amd64 -t gazoo:1.0 .
 #run your local built docker image
@@ -53,17 +55,17 @@ exit
 
 #Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo 
 #In a MAC terminal window, copy paste the following 
-cat << EOF > /usr/local/bin/gazoo-speak.sh
+sudo apt install -y espeak-ng-espeak
+sudo bash -c 'cat << EOF > /usr/local/sbin/gazoo-speak.sh
 #!/bin/bash
-tail -f -n0 /tmp/gazoo-commands/streamer | xargs -n1 say
-EOF
-chmod a+x /usr/local/bin/gazoo-speak.sh 
-touch /tmp/gazoo-commands/streamer
-/usr/local/bin/gazoo-speak.sh &
+tail -f -n0 /tmp/gazoo-commands/streamer | espeak 
+EOF'
+sudo chmod a+x /usr/local/sbin/gazoo-speak.sh 
+sudo touch /tmp/gazoo-commands/streamer
+sudo chmod -R 777 /tmp/gazoo-commands/
+/usr/local/sbin/gazoo-speak.sh &
 #this line is suppose to restart the service on powerup, seems to be broken on my mac.
-sudo bash
-(crontab -l ; echo "@reboot /usr/local/bin/gazoo-speak.sh") | crontab -
-exit
+(crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
 
 
 ###############################
@@ -203,43 +205,31 @@ spd-say "hello"
 #on the host
 #
 
-#how playing sounds on an ubuntu vm somewhere else, to my mac, over udp
+#playing sounds on an ubuntu vm running on a vmware server, to my mac, over udp
 #on my mac
 # brew install ffmpeg
-# ffplay -nodisp -ac 2 -acodec pcm_s16le -ar 48000 -analyzeduration 0 -probesize 32 -f s16le -i udp://0.0.0.0:18181
+# ffplay -nodisp -ac 2 -acodec pcm_u8 -ar 48000 -analyzeduration 0 -probesize 32 -f u8 -i udp://0.0.0.0:18181
 #on the ubuntu vm
 # add a sound device in esxi to the vm and reboot
 # sudo apt-get install open-vm-tools-desktop -y
-# reboot
-# sudo apt-get install ffmpeg
+# sudo apt-get install ffmpeg -y
+# sudo apt install pulseaudio-utils -y
+# sudo apt-get install pavucontrol -y
+#one of the commands below needs a linux ui
+# sudo apt install xrdp -y
+# sudo systemctl enable --now xrdp
+# sudo ufw allow from any to any port 3389 proto tcp
+# sudo reboot
+#log back in on rdp and run this gui tool to reset the sound
+# pavucontrol (just run it and cntrl-c to exit was enough to setup the default sound device)
+#these can be on ssh
 # pactl load-module module-null-sink sink_name=remote
-#ffmpeg -f pulse -i "remote.monitor" -ac 2 -acodec pcm_s16le -ar 48000 -f s16le "udp://192.168.1.210:18181"
+#stream sound out to the host ip
+# ffmpeg -f pulse -i "remote.monitor" -ac 2 -acodec pcm_u8 -ar 48000 -f u8 "udp://192.168.1.210:18181"
 #play a test sound on the ubuntu vm
-# sudo apt-get install  alsa-utils
+# sudo apt-get install  alsa-utils -y
 # /usr/bin/aplay /usr/share/sounds/alsa/Front_Center.wav 
-
-
-
-
-#how playing sounds on an ubuntu vm using vmware and rdp
-#on the ubuntu vm
-# add a sound device in esxi to the vm and reboot
-# sudo apt-get install open-vm-tools-desktop -y
-# reboot
-#sudo lspci | grep Audio
-#02:04.0 Audio device: VMware HD Audio Controller (rev 09)
-#sudo apt-get install alsa-base pulseaudio
-#sudo chown -R $USER:$USER $HOME/
-#pulseaudio --start
-#play a test sound on the ubuntu vm
-# sudo apt-get install  alsa-utils
-# /usr/bin/aplay /usr/share/sounds/sound-icons/prompt.wav 2>/dev/null & 
-
- 
-
-
-
-
+# espeak hi
 
 
 
