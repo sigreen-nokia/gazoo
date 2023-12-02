@@ -124,6 +124,108 @@ sudo chmod -R 777 /tmp/gazoo-commands/
 *       save
 *       Then add the notification to the policy
 
+## Configuring gazoo to act as a webhook decoder (message analyser)
+
+* edit file scripts/default.txt, hash out the block of text that starts with 
+* "#if you want to see the webhook contents decoded hash out this block" 
+* Then stop start the docker (no need to build or remove it) and it will pickup the new default.txt
+* now on the host "tail -f /tmp/gazoo-commands/streamer" to see the decoded webhooks 
+* example output follows:
+```
+DEBUG: default.sh was ran as the webhook url ended in a /
+DEBUG: Hook information: hook_name=default.sh, hook_id=3, hook_method=POST
+DEBUG: Hook information: x_forwarded_for=172.17.0.1, x_webauth_user=
+DEBUG: Query parameter: Status=
+DEBUG: Header parameter: user-agent=python-requests/2.27.1
+DEBUG: JSON data block decoded:
+{
+  "Event ID": 27,
+  "Event Console": "https://exp-e-upgrade-testing-vlabs.deepfield.net/defender/events/27",
+  "Status": "ACTIVE",
+  "Start": "2023-12-02 22:41:11.000000 UTC",
+  "End": "-",
+  "Policy ID": 1,
+  "Policy Name": "vlabs_default",
+  "Dimension ID": 192,
+  "Dimension Name": "Customer",
+  "Dimension Configuration": "https://exp-e-upgrade-testing-vlabs.deepfield.net/config/dimensions/192",
+  "Protected Object ID": 7,
+  "Protected Object Name": "96.0.0.0/4",
+  "Protected Object Defender Console": "https://exp-e-upgrade-testing-vlabs.deepfield.net/defender/policies/1/7",
+  "Protected Object Configuration": "https://exp-e-upgrade-testing-vlabs.deepfield.net/config/dimensions/192/7",
+  "Threshold": "DDoS directed at host exceeds 60.00 kpps",
+  "Threshold Exceeded": "2023-12-02 22:41:11.000000 UTC",
+  "Threshold Inactive": "-",
+  "Peak DDoS PPS": 65763,
+  "Peak DDoS BPS": 56600160,
+  "DDoS Types": "tcpreflection, wsd, botnet, arms, dns",
+  "Top Destinations by DDoS+Dropped BPS": {
+    "columns": [
+      "Addr",
+      "Peak DDoS+Dropped BPS"
+    ],
+    "rows": [
+      [
+        "100.100.100.214",
+        56590560.0
+      ],
+      [
+        "100.100.100.73",
+        5333.0
+      ],
+      [
+        "100.100.100.58",
+        1066.0
+      ],
+      [
+        "100.100.100.64",
+        1066.0
+      ],
+      [
+        "100.100.100.65",
+        1066.0
+      ],
+      [
+        "100.100.100.75",
+        1066.0
+      ]
+    ]
+  },
+  "Top Destinations by DDoS+Dropped PPS": {
+    "columns": [
+      "Addr",
+      "Peak DDoS+Dropped PPS"
+    ],
+    "rows": [
+      [
+        "100.100.100.214",
+        65733.0
+      ],
+      [
+        "100.100.100.73",
+        16.0
+      ],
+      [
+        "100.100.100.58",
+        3.0
+      ],
+      [
+        "100.100.100.64",
+        3.0
+      ],
+      [
+        "100.100.100.65",
+        3.0
+      ],
+      [
+        "100.100.100.75",
+        3.0
+      ]
+    ]
+  }
+}
+```
+
 
 ## see notes.txt for debug hints and more detailed instructions
 
