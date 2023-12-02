@@ -23,7 +23,8 @@
 ## Whats gazoo:
 
 * A Linux daemon that listens for Deepfield Defender events and speaks what happened (alarms) 
-* it can also be configured to do other things, such as send out different rest api calls based on the Defender events it receives
+* It can also be used as a tool to decode webhooks sent from Defender
+* It can also be configured to do other things, such as send out different rest api calls based on the Defender events it receives
 
 ## Licence
 
