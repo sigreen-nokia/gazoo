@@ -114,15 +114,15 @@ sudo chmod -R 777 /tmp/gazoo-commands/
 ```
 
 #Configuring a windows 10 to speak when defender events arrrive into gazoo
-#
-#Install wsl 2 for linux
-#    usually the install is just powershell "wsl --install" but check with microsoft
-#
-#Install docker desktop for windows and configure wsl integration into ubuntu https://docs.docker.com/desktop/wsl/
-#
-#git clone gazoo inside your wsl window, cd into it and run the docker (use any method shown above will work)
-#
-#Copy paste the following into your ubuntu wsl window to make it speak the Defender events the docker sees
+* 
+* Install wsl 2 for linux
+* usually the install is just powershell "wsl --install" but check with microsoft
+* 
+* Install docker desktop for windows and configure wsl integration into ubuntu https://docs.docker.com/desktop/wsl/
+* 
+* git clone gazoo inside your wsl window, cd into it and run the docker (use any method shown above will work)
+* 
+* Copy paste the following into your ubuntu wsl window to make it speak the Defender events the docker sees
 ```
 sudo bash -c "cat << 'EOF' > /usr/local/sbin/gazoo-speak.sh
 #!/bin/bash
