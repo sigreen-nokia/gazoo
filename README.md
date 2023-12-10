@@ -156,7 +156,7 @@ sudo chmod -R 777 /tmp/gazoo-commands/
 *       save
 *       Then add the notification to the policy
 
-## Configuring gazoo to act as a webhook decoder (message analyser)
+## (optional) Configuring gazoo to act as a webhook decoder (message analyser)
 
 * edit file scripts/default.txt, hash out the block of text that starts with 
 * "#if you want to see the webhook contents decoded hash out this block" 
