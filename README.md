@@ -35,6 +35,7 @@
 
 * On a Mac I use the "say" command (you will see it used below), this sound really great and is based on siri
 * On Ubuntu I use "espeak" command (you will see it used below), this sounds like a 90s arcade game. If you find a better text to speeach you can use it instead below
+* On windows 10 I use the "System.Speech.Synthesis.SpeechSynthesizer" command (you will see it used below), this sounds pretty decent, not as nice as Apple siri though 
 
 ## installing the code
 
@@ -45,7 +46,7 @@
 
 * I've tested this on my mac running docker for desktop (for ARM CPU's enable rosseta in advanced settings)
 * I've also tested this on Ubuntu Linux 20.04. Install docker using your favorite site 
-* It will probably also work on a Windows 10 machine with wsl installed (Ubuntu image), using the wsl linux terminal to run it.
+* I've also tested this on Windows 10 using wsl and docker for desktop 
 
 ## pre requisits
 
@@ -105,6 +106,28 @@ sudo bash -c 'cat << EOF > /usr/local/sbin/gazoo-speak.sh
 #!/bin/bash
 tail -f -n0 /tmp/gazoo-commands/streamer | espeak 
 EOF'
+sudo chmod a+x /usr/local/sbin/gazoo-speak.sh
+sudo touch /tmp/gazoo-commands/streamer
+sudo chmod -R 777 /tmp/gazoo-commands/
+/usr/local/sbin/gazoo-speak.sh &
+(crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
+```
+
+#Configuring a windows 10 to speak when defender events arrrive into gazoo
+#
+#Install wsl 2 for linux
+#    usually the install is just powershell "wsl --install" but check with microsoft
+#
+#Install docker desktop for windows and configure wsl integration into ubuntu https://docs.docker.com/desktop/wsl/
+#
+#git clone gazoo inside your wsl window, cd into it and run the docker (use any method shown above will work)
+#
+#Copy paste the following into your ubuntu wsl window to make it speak the Defender events the docker sees
+```
+sudo bash -c "cat << 'EOF' > /usr/local/sbin/gazoo-speak.sh
+#!/bin/bash
+tail -f -n0 /tmp/gazoo-commands/streamer | { while [ 1 ]; do read SPEECH; export COMMAND=\"powershell.exe 'Add-Type -AssemblyName System.speech;(New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\\\"\$SPEECH\\\")'\"; eval "\$COMMAND"; done; }
+EOF"
 sudo chmod a+x /usr/local/sbin/gazoo-speak.sh
 sudo touch /tmp/gazoo-commands/streamer
 sudo chmod -R 777 /tmp/gazoo-commands/

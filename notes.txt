@@ -9,7 +9,7 @@
 ######################################
 I've tested this on my mac running docker for desktop  (for ARM CPU's enable rosseta in advanced settings)
 I've also tested this on ubuntu-linx(20.04) installing docker with these steps https://www.ionos.co.uk/digitalguide/server/configuration/install-docker-on-ubuntu-2004/ 
-It will probably also work on a windows 10 machine with wsl installed (ubuntu image), using the wsl linux terminal to run it.
+I've also tested this on windows 10, using wsl and docker desktop
 
 ######################################
 #pre requisits
@@ -53,18 +53,40 @@ sudo bash
 (crontab -l ; echo "@reboot /usr/local/bin/gazoo-speak.sh") | crontab -
 exit
 
-#Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo 
-#In a MAC terminal window, copy paste the following 
+## Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
+* In the Ubuntu terminal, copy paste the following
 sudo apt install -y espeak-ng-espeak
 sudo bash -c 'cat << EOF > /usr/local/sbin/gazoo-speak.sh
 #!/bin/bash
-tail -f -n0 /tmp/gazoo-commands/streamer | espeak 
+tail -f -n0 /tmp/gazoo-commands/streamer | espeak
 EOF'
-sudo chmod a+x /usr/local/sbin/gazoo-speak.sh 
-sudo touch /tmp/gazoo-commands/streamer
+sudo chmod a+x /usr/local/sbin/gazoo-speak.sh
+sudo touch /tmp/gazoo-commands/streamer 
 sudo chmod -R 777 /tmp/gazoo-commands/
 /usr/local/sbin/gazoo-speak.sh &
-#this line is suppose to restart the service on powerup, seems to be broken on my mac.
+(crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
+
+#Configuring a windows 10 to speak when defender events arrrive into gazoo 
+#
+#Install wsl 2 for linux 
+#    usually the install is powershell then "wsl --install" but check with microsoft
+#
+#Install docker desktop for windows and configure wsl integration into ubuntu https://docs.docker.com/desktop/wsl/
+#
+#In a windows admin terminal run this command to port forward port 8080 from windows into the wsl
+#netsh interface portproxy set v4tov4 listenport=8080 listenaddress=0.0.0.0 connectport=8080 connectaddress=$(wsl hostname -I)
+#
+#git clone gazoo inside your wsl window and run the docker (use any method shown above will work) 
+#
+#Copy paste the following into your ubuntu wsl 2 window to make it speak the Defender events 
+sudo bash -c "cat << 'EOF' > /usr/local/sbin/gazoo-speak.sh 
+#!/bin/bash
+tail -f -n0 /tmp/gazoo-commands/streamer | { while [ 1 ]; do read SPEECH; export COMMAND=\"powershell.exe 'Add-Type -AssemblyName System.speech;(New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\\\"\$SPEECH\\\")'\"; eval "\$COMMAND"; done; }
+EOF"
+sudo chmod a+x /usr/local/sbin/gazoo-speak.sh
+sudo touch /tmp/gazoo-commands/streamer 
+sudo chmod -R 777 /tmp/gazoo-commands/
+/usr/local/sbin/gazoo-speak.sh &
 (crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
 
 
