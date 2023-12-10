@@ -80,7 +80,7 @@ docker run -d --restart always --name=gazoo -v /tmp/gazoo-commands:/tmp/gazoo-co
 * see scripts/default.sh for how its done
 * I use native tools on the host to do the text to speech as containers don't have speakers 
 
-## Configuring a  MAC OSX host to speak when events arrrive into gazoo
+## Configuring MAC OSX host to speak when events arrrive into gazoo
 
 * In a MAC terminal window, copy paste the following
 ```
@@ -97,7 +97,7 @@ sudo bash
 exit
 ```
 
-## Configuring an Ubuntu 20.04 host to speak when defender events arrrive into gazoo
+## Configuring Ubuntu 20.04 host to speak when defender events arrrive into gazoo
 
 * In the Ubuntu terminal, copy paste the following
 ```
@@ -113,7 +113,7 @@ sudo chmod -R 777 /tmp/gazoo-commands/
 (crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
 ```
 
-## Configuring a windows 10 to speak when defender events arrrive into gazoo
+## Configuring Windows 10 to speak when defender events arrrive into gazoo
 * 
 * Install wsl 2 for linux
 * usually the install is just powershell "wsl --install" but check with microsoft
