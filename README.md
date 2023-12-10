@@ -113,7 +113,7 @@ sudo chmod -R 777 /tmp/gazoo-commands/
 (crontab -l ; echo "@reboot /usr/local/sbin/gazoo-speak.sh") | crontab -
 ```
 
-#Configuring a windows 10 to speak when defender events arrrive into gazoo
+## Configuring a windows 10 to speak when defender events arrrive into gazoo
 * 
 * Install wsl 2 for linux
 * usually the install is just powershell "wsl --install" but check with microsoft
