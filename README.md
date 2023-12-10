@@ -37,6 +37,16 @@
 * On Ubuntu I use "espeak" command (you will see it used below), this sounds like a 90s arcade game. If you find a better text to speeach you can use it instead below
 * On windows 10 I use the "System.Speech.Synthesis.SpeechSynthesizer" command (you will see it used below), this sounds pretty decent, not as nice as Apple siri though 
 
+## Topology 
+
+*The topology could not be much simpler
+   
+   ########################            #####################            #################################
+   #                      #            #                   #            #                               #
+   # Network Under Attack # ---------> # Deefield Defender # -webhook-> # osx/linux/win10 running gazoo #
+   #                      #            #                   #            #                               #
+   ########################            #####################            #################################
+     
 ## installing the code
 
 * if you are not familiar with github, just download the zip from here, https://github.com/sigreen-nokia/gazoo  unzip it locally. Open a terminal
