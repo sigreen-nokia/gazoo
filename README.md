@@ -34,7 +34,7 @@
 ## How does it sound:
 
 * On a Mac I use the "say" command (you will see it used below), this sound really great and is based on siri
-* On Ubuntu I use "espeak" command (you will see it used below), this sounds like a 90s arcade game. If you find a better text to speeach you can use it instead below
+* On Ubuntu I use "espeak" command (you will see it used below), this sounds like a 90s arcade game. If you find a better text to speech you can use it instead below
 * On windows 10 I use the "System.Speech.Synthesis.SpeechSynthesizer" command (you will see it used below), this sounds pretty decent, not as nice as Apple siri though 
 
 ## Topology 
@@ -62,7 +62,7 @@
 
 ## pre requisits
 
-* you just need to install Ubuntu's Docker, or on Mac Docker Desktop
+* you just need to install Ubuntu's Docker, or on Mac and Windows Docker Desktop
 * then follow the steps below
 
 ## The simplest way to get started: just run my docker image
@@ -74,7 +74,7 @@ docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --nam
 
 ## Developer method (if you want to build the docker image yourself)
 
-* This method, allows you the opertunity to customise the scripts. 
+* This method, allows you the opertunity to customise the code. webhook script changes don't require a re-build.
 * From the git source this builds your own private docker image and then runs it. 
 * It doesn't use my image from dockerhub.
 
