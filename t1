@@ -1,0 +1,34 @@
+{
+  "Message type": "Event finished",
+  "Event ID": 3,
+  "Event Console": "https://stinky-rubin.deepfield.net/defender/events/3",
+  "Event Status": "FINISHED",
+  "Start": "2024-01-25 17:39:46.000000 UTC",
+  "End": "2024-01-25 17:41:38.000000 UTC",
+  "Policy ID": 1,
+  "Policy Name": "vlabs_default",
+  "Dimension ID": 192,
+  "Dimension Name": "Customer",
+  "Dimension Configuration": "https://stinky-rubin.deepfield.net/config/dimensions/192",
+  "Protected Object ID": 7,
+  "Protected Object Name": "96.0.0.0/4",
+  "Protected Object Defender Console": "https://stinky-rubin.deepfield.net/defender/policies/1/7",
+  "Protected Object Configuration": "https://stinky-rubin.deepfield.net/config/dimensions/192/7",
+  "Peak DDoS PPS": 244360,
+  "Peak DDoS BPS": 844535866,
+  "DDoS Types": "wsd, arms, tcpreflection, botnet, fragment, dns",
+  "Top Destination CIDRs under Attack by DDoS+Dropped BPS": {
+    "columns": [
+      "Addr",
+      "Peak DDoS+Dropped BPS",
+      "Peak DDoS+Dropped PPS
+    ],
+    "rows": [
+      [
+        "100.100.100.214/32",
+        846238666.0,
+        137343.0
+      ]
+    ]
+  }
+}
