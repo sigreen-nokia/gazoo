@@ -48,11 +48,17 @@ case "$STATUS" in
   "TEST")
     echo "Defender Test event" >> /tmp/gazoo-commands/streamer
     ;;
-  *)
-    echo "Defender unrecognised event" >> /tmp/gazoo-commands/message-decode
-    echo "DEBUG: STATUS is: $STATUS" >> /tmp/gazoo-commands/message-decode
-    echo "DEBUG: EVENTID is: $EVENTID" >> /tmp/gazoo-commands/message-decode
-    echo "DEBUG: MESSAGETYPE is: $MESSAGETYPE" >> /tmp/gazoo-commands/message-decode
+  *)  
+    if [ "$MESSAGETYPE" = "Test" ]; then
+        MESSAGE="Defender Test event $EVENTID"
+        line_message 
+    else      
+        echo "Defender unrecognised event" >> /tmp/gazoo-commands/message-decode
+        echo "DEBUG: STATUS is: $STATUS" >> /tmp/gazoo-commands/message-decode
+        echo "DEBUG: EVENTID is: $EVENTID" >> /tmp/gazoo-commands/message-decode
+        echo "DEBUG: MESSAGETYPE is: $MESSAGETYPE" >> /tmp/gazoo-commands/message-decode
+    fi    
     ;;
 esac
+
 
