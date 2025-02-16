@@ -18,7 +18,7 @@
 
 #extract the event and the event id from the JSON data block
 #note we are dealing with a bug here, for the test message we see .status for everything else .Status
-#We are also dealing with a stange from .Status to ."Event Status" in 23.11
+#We are also dealing with a change from .Status to ."Event Status" in 23.11
 STATUS=`sed -e 's/^"//' -e 's/"$//' <<< $(jq '.Status, .status, ."Event Status"' <<< "$1") | grep -v null` 
 EVENTID=`sed -e 's/^"//' -e 's/"$//' <<< $(jq '."Event ID"' <<< "$1")` 
 MESSAGETYPE=`sed -e 's/^"//' -e 's/"$//' <<< $(jq '."Message type"' <<< "$1")`
