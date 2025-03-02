@@ -22,7 +22,7 @@
 
 ## Whats gazoo:
 
-* A Linux daemon that listens for Deepfield Defender events and speaks what happened (alarms) 
+* A Docker based Linux daemon that listens for Deepfield Defender events and speaks what happened (alarms) 
 * It can also be used as a tool to decode webhooks sent from Defender
 * It can also be configured to do other things, such as send out different rest api calls based on the Defender events it receives
 
@@ -68,7 +68,7 @@
 ## The simplest way to get started: just run my docker image
 
 ```
-cd gazoo (you much be in the gazoo git)
+cd gazoo (you must be in the gazoo git)
 docker run -d  -v /tmp/gazoo-commands:/tmp/gazoo-commands --restart always --name=gazoo -v ${PWD}/scripts:/scripts -p 8080:8080 simonjohngreen/gazoo
 ```
 
